@@ -35,7 +35,5 @@ public class AccountDTO {
 
     public double getBalance() { return balance; }
 
-    public Set<TransactionDTO> getTransactions() {
-        return transactions;
-    }
+    public Set<TransactionDTO> getTransactions() { return transactions; }
 }
