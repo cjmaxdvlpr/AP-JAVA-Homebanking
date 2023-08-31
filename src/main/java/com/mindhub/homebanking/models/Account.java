@@ -30,9 +30,9 @@ public class Account {
     public Account() { }
 
     public Account(String num, LocalDate date, double bal) {
-        number = num;
-        creationDate = date;
-        balance = bal;
+        this.number = num;
+        this.creationDate = date;
+        this.balance = bal;
 
     }
 

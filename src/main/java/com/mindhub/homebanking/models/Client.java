@@ -79,6 +79,16 @@ public class Client {
 
     public Set<Card> getCards() { return cards; }
 
+    public Set<Card> getCardsByType(CardType cardType) {
+        return cards.stream()
+                .filter(card -> cardType.equals(card.getType()))
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Card> getCreditCards() { return cards; }
+
+
+
     public void addCard(Card card){
         card.setClient(this);
         card.setCardHolder(this.getFullName());
@@ -100,6 +110,9 @@ public class Client {
         return this.firstName + " " + this.lastName;
     }
 
+    public List<Long> getAccountsIds(){
+        return this.getAccounts().stream().map(account -> account.getId()).collect(Collectors.toList());
+    }
 
     public String toString() {
         return firstName + " " + lastName + " " + email;

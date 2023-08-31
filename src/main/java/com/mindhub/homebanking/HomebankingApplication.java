@@ -76,8 +76,8 @@ public class HomebankingApplication {
 			clientLoanRepo.save(clientLoan1);
 			clientLoanRepo.save(clientLoan2);
 
-			Card card1 = new Card(CardType.DEBIT, CardColor.GOLD, "4654-2912-8915-5836", 563, LocalDate.now(), LocalDate.now().plusYears(5));
-			Card card2 = new Card(CardType.CREDIT, CardColor.TITANIUM, "4611-5678-5920-7418", 169, LocalDate.now(), LocalDate.now().plusYears(5));
+			Card card1 = new Card(client1.getFullName(), CardType.DEBIT, CardColor.GOLD, "4654-2912-8915-5836", 563, LocalDate.now(), LocalDate.now().plusYears(5));
+			Card card2 = new Card(client1.getFullName(), CardType.CREDIT, CardColor.TITANIUM, "4611-5678-5920-7418", 169, LocalDate.now(), LocalDate.now().plusYears(5));
 			client1.addCard(card1);
 			client1.addCard(card2);
 			cardRepo.save(card1);
@@ -120,7 +120,7 @@ public class HomebankingApplication {
 			clientLoanRepo.save(clientLoan3);
 			clientLoanRepo.save(clientLoan4);
 
-			Card card3 = new Card(CardType.CREDIT, CardColor.SILVER, "4304-3297-7715-4129", 836, LocalDate.now(), LocalDate.now().plusYears(5));
+			Card card3 = new Card(client2.getFullName(), CardType.CREDIT, CardColor.SILVER, "4304-3297-7715-4129", 836, LocalDate.now(), LocalDate.now().plusYears(5));
 			client2.addCard(card3);
 			cardRepo.save(card3);
 

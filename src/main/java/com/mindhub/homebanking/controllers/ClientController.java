@@ -1,11 +1,15 @@
 package com.mindhub.homebanking.controllers;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import com.mindhub.homebanking.dtos.AccountDTO;
+import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.dtos.ClientDTO;
+import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
 //import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.security.core.Authentication;
@@ -18,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class ClientController {
+
+    @Autowired
+    private AccountRepository accountRepo;
 
     @Autowired
     private ClientRepository clientRepo;
@@ -70,7 +77,18 @@ public class ClientController {
 
         }
 
-        clientRepo.save(new Client(firstName, lastName, email, passwordEncoder.encode(password)));
+        Client client = new Client(firstName, lastName, email, passwordEncoder.encode(password));
+        clientRepo.save(client);
+        int vinNumber = ThreadLocalRandom.current().nextInt(10000000, 99999999 + 1);
+        //See if the account number already exists. If it exists, generate a new one.
+        String vin = "VIN-"+ vinNumber;
+        while(accountRepo.findByNumber(vin) != null){
+            vin="VIN-"+ ThreadLocalRandom.current().nextInt(10000000, 99999999 + 1);
+        }
+        Account account = new Account( vin, LocalDate.now(), 0);
+        client.addAccount(account);
+        accountRepo.save(account);
+
 
         return new ResponseEntity<>(HttpStatus.CREATED);
 
