@@ -9,6 +9,7 @@ import com.mindhub.homebanking.models.CardType;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.CardRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.services.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,23 +30,32 @@ import java.util.stream.Collectors;
 public class CardController {
 
     @Autowired
+    private CardService cardService;
+
+    /*@Autowired
     private CardRepository cardRepo;
 
     @Autowired
-    private ClientRepository clientRepo;
+    private ClientRepository clientRepo;*/
 
     @RequestMapping("/clients/current/cards")
     public Set<CardDTO> getCards(Authentication authentication) {
-        Client client =  clientRepo.findByEmail(authentication.getName());
-        return new ClientDTO(client).getCards();
+
+        return cardService.getCardsByEmail(authentication.getName());
+
+        /*Client client =  clientRepo.findByEmail(authentication.getName());
+        return new ClientDTO(client).getCards();*/
     }
 
     @RequestMapping(path = "/clients/current/cards", method = RequestMethod.POST)
-    public ResponseEntity<Object> addNewCard(Authentication authentication,
+    public ResponseEntity<String> addNewCard(Authentication authentication,
                                              @RequestParam CardType type,
                                              @RequestParam CardColor color){
 
-        Client client =  clientRepo.findByEmail(authentication.getName());
+
+        return cardService.addNewCard(authentication.getName(),type,color);
+
+        /*Client client =  clientRepo.findByEmail(authentication.getName());
         if(client.getCardsByType(type).size() < 3 ){
             int cvv = ThreadLocalRandom.current().nextInt(0, 999 + 1);
             String cardNumber = ThreadLocalRandom.current().nextInt(0, 9999 + 1) +
@@ -77,7 +87,7 @@ public class CardController {
                             "Limit of three debit cards reached":
                             "Limit of three credit cards reached",
                     HttpStatus.FORBIDDEN);
-        }
+        }*/
 
     }
 

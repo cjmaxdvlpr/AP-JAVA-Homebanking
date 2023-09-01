@@ -11,7 +11,7 @@ import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.dtos.ClientDTO;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
-//import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import com.mindhub.homebanking.services.ClientService;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,48 +24,61 @@ import org.springframework.web.bind.annotation.*;
 public class ClientController {
 
     @Autowired
+    private ClientService clientService;
+
+    /*@Autowired
     private AccountRepository accountRepo;
 
     @Autowired
     private ClientRepository clientRepo;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;*/
 
 
     //Servlet (listen and response to specific requests)
     @RequestMapping("/clients")
     public List<ClientDTO> getClients() {
 
-        return clientRepo.findAll()
+        return clientService.getClients();
+
+        /*return clientRepo.findAll()
                 .stream()
                 .map(client -> new ClientDTO(client))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
 
     }
 
     @RequestMapping("/clients/{id}")
     public ClientDTO getClient(@PathVariable Long id){
-        return new ClientDTO(clientRepo.findById(id).orElse(null));
+
+        return clientService.getClientById(id);
+
+        //return new ClientDTO(clientRepo.findById(id).orElse(null));
 
     }
 
     @RequestMapping("/clients/current")
     public ClientDTO getCurrentAuthenticatedClient(Authentication authentication){
-        return new ClientDTO(clientRepo.findByEmail(authentication.getName()));
+
+        return clientService.getClientByEmail(authentication.getName());
+
+        //return new ClientDTO(clientRepo.findByEmail(authentication.getName()));
 
     }
 
 
 
     @RequestMapping(path = "/clients", method = RequestMethod.POST)
-    public ResponseEntity<Object> register(
+    public ResponseEntity<String> register(
             @RequestParam String firstName,
             @RequestParam String lastName,
             @RequestParam String email,
             @RequestParam String password) {
 
-        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        return clientService.registerClient(firstName, lastName, email, password);
+
+        /*if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
 
             return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
 
@@ -90,7 +103,7 @@ public class ClientController {
         accountRepo.save(account);
 
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);*/
 
     }
 
