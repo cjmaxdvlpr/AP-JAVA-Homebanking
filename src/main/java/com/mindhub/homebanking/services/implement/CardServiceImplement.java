@@ -29,11 +29,8 @@ public class CardServiceImplement implements CardService {
 
     @Override
     public Set<CardDTO> getCardsByEmail(String email) {
-
         Client client =  clientRepo.findByEmail(email);
         return new ClientDTO(client).getCards();
-
-        //return null;
     }
 
     @Override
@@ -62,8 +59,6 @@ public class CardServiceImplement implements CardService {
                             "Limit of three credit cards reached",
                     HttpStatus.FORBIDDEN);
         }
-
-        //return null;
     }
 
     private String generateCardNumber(){

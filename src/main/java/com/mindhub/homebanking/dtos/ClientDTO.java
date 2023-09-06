@@ -62,4 +62,6 @@ public class ClientDTO {
     public Set<ClientLoanDTO> getLoans() { return loans; }
 
     public Set<CardDTO> getCards() { return cards; }
+
+    //public List<Long> getAccountsIds() { return getAccountsIds(); }
 }

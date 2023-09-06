@@ -14,7 +14,10 @@ public interface ClientService {
 
     public ClientDTO getClientById(Long id);
 
+    //public ClientDTO getClientByEmail(String email);
     public ClientDTO getClientByEmail(String email);
+
+    public List<Long> getClientAccountsIds(String email);
 
     public ResponseEntity<String> registerClient(String firstName,
                                                  String lastName,

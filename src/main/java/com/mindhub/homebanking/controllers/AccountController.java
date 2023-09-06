@@ -8,6 +8,7 @@ import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import com.mindhub.homebanking.services.AccountService;
+import com.mindhub.homebanking.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,75 +31,39 @@ public class AccountController {
     private AccountService accountService;
 
     @Autowired
-    private AccountRepository accountRepo;
+    private ClientService clientService;
 
-    @Autowired
-    private ClientRepository clientRepo;
 
     @RequestMapping("/accounts")
     public List<AccountDTO> getAccounts() {
-
         return accountService.getAccounts();
-
-        /*return accountRepo.findAll()
-                .stream()
-                .map(account -> new AccountDTO(account))
-                .collect(Collectors.toList());*/
-
     }
 
-    /*@RequestMapping("/accounts/{id}")
-    public AccountDTO getAccount(@PathVariable Long id){
-        return new AccountDTO(accountRepo.findById(id).orElse(null));
-    }*/
-
     @RequestMapping("/accounts/{id}")
-    public AccountDTO getAccount(Authentication authentication, @PathVariable Long id){
-
-        return accountService.getAccountById(authentication.getName(),id);
-
-        /*Client client = clientRepo.findByEmail(authentication.getName());
-        List<Long> clientAccountIds = client.getAccountsIds();
-        if(clientAccountIds.contains(id)){
-            return new AccountDTO(accountRepo.findById(id).orElse(null));
+    public ResponseEntity<AccountDTO> getAccount(Authentication authentication, @PathVariable Long id){
+        if(clientService.getClientById(id) != null) {
+            return new ResponseEntity<>(accountService.getAccountById(authentication.getName(),id), HttpStatus.OK);
         }else{
-            return null;
-            //return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }*/
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @RequestMapping("/clients/current/accounts")
-    public Set<AccountDTO> getAccounts(Authentication authentication) {
-
-        return accountService.getAccountsByEmail(authentication.getName());
-
-        /*Client client =  clientRepo.findByEmail(authentication.getName());
-        return new ClientDTO(client).getAccounts();*/
+    public ResponseEntity<Set<AccountDTO>> getAccounts(Authentication authentication) {
+        if(clientService.getClientByEmail(authentication.getName()) != null) {
+            return new ResponseEntity<>(accountService.getAccountsByEmail(authentication.getName()),HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
-
 
     @RequestMapping(path = "/clients/current/accounts", method = RequestMethod.POST)
     public ResponseEntity<String> addNewAccount( Authentication authentication){
-
-        return accountService.addNewAccount(authentication.getName());
-
-        /*//ClientDTO clientDTO = new ClientDTO(clientRepo.findByEmail(authentication.getName()));
-        Client client =  clientRepo.findByEmail(authentication.getName());
-        if(client.getAccounts().size() < 3 ){
-            int vinNumber = ThreadLocalRandom.current().nextInt(10000000, 99999999 + 1);
-            //See if the account number already exists. If it exists, generate a new one.
-            String vin = "VIN-"+ vinNumber;
-            while(accountRepo.findByNumber(vin) != null){
-                vin="VIN-"+ ThreadLocalRandom.current().nextInt(10000000, 99999999 + 1);
-            }
-            Account account = new Account( vin, LocalDate.now(), 0);
-            client.addAccount(account);
-            accountRepo.save(account);
-            return new ResponseEntity<>("Account created success", HttpStatus.CREATED);
-
+        if(clientService.getClientByEmail(authentication.getName()) != null) {
+            return accountService.addNewAccount(authentication.getName());
         }else{
-            return new ResponseEntity<>("Limit of three accounts reached", HttpStatus.FORBIDDEN);
-
-        }*/
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
+
 }

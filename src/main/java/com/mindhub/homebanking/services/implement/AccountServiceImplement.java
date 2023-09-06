@@ -47,8 +47,17 @@ public class AccountServiceImplement implements AccountService {
             return new AccountDTO(accountRepo.findById(id).orElse(null));
         }else{
             return null;
-            //return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+    }
+
+    @Override
+    public AccountDTO getAccountByNumber(String accountNumber){
+        if(accountRepo.findByNumber(accountNumber) != null){
+            return new AccountDTO(accountRepo.findByNumber(accountNumber));
+        }else{
+            return null;
+        }
+
     }
 
     @Override
@@ -58,12 +67,12 @@ public class AccountServiceImplement implements AccountService {
     }
 
     @Override
-    //public ResponseEntity<Object> addNewAccount(Authentication authentication){
     public ResponseEntity<String> addNewAccount(String email){
         //ClientDTO clientDTO = new ClientDTO(clientRepo.findByEmail(email));
         Client client =  clientRepo.findByEmail(email);
         if(client.getAccounts().size() < 3 ){
-            //Generate account number See if the account number already exists. If it exists, generate a new one.
+            //Generate account number See if the account number already exists.
+            //If it exists, generate a new one.
             String accountNumber;
             do{accountNumber=generateAccountNumber();}
             while(accountRepo.findByNumber(accountNumber) != null);
@@ -76,7 +85,7 @@ public class AccountServiceImplement implements AccountService {
         }
     }
 
-    private String generateAccountNumber(){
+    public String generateAccountNumber(){
         return "VIN-" + ThreadLocalRandom.current().nextInt(10000000, 99999999 + 1);
     }
 

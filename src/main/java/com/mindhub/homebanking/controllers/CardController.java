@@ -10,6 +10,7 @@ import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.CardRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import com.mindhub.homebanking.services.CardService;
+import com.mindhub.homebanking.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -32,19 +34,16 @@ public class CardController {
     @Autowired
     private CardService cardService;
 
-    /*@Autowired
-    private CardRepository cardRepo;
-
     @Autowired
-    private ClientRepository clientRepo;*/
+    private ClientService clientService;
 
     @RequestMapping("/clients/current/cards")
-    public Set<CardDTO> getCards(Authentication authentication) {
-
-        return cardService.getCardsByEmail(authentication.getName());
-
-        /*Client client =  clientRepo.findByEmail(authentication.getName());
-        return new ClientDTO(client).getCards();*/
+    public ResponseEntity<Set<CardDTO>> getCards(Authentication authentication) {
+        if(clientService.getClientByEmail(authentication.getName()) != null) {
+            return new ResponseEntity<>(cardService.getCardsByEmail(authentication.getName()),HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     @RequestMapping(path = "/clients/current/cards", method = RequestMethod.POST)
@@ -52,42 +51,23 @@ public class CardController {
                                              @RequestParam CardType type,
                                              @RequestParam CardColor color){
 
-
-        return cardService.addNewCard(authentication.getName(),type,color);
-
-        /*Client client =  clientRepo.findByEmail(authentication.getName());
-        if(client.getCardsByType(type).size() < 3 ){
-            int cvv = ThreadLocalRandom.current().nextInt(0, 999 + 1);
-            String cardNumber = ThreadLocalRandom.current().nextInt(0, 9999 + 1) +
-                                "-" +
-                                ThreadLocalRandom.current().nextInt(0, 9999 + 1) +
-                                "-" +
-                                ThreadLocalRandom.current().nextInt(0, 9999 + 1) +
-                                "-" +
-                                ThreadLocalRandom.current().nextInt(0, 9999 + 1);
-            //See if the account number already exists. If it exists, generate a new one.
-            while(cardRepo.findByNumber(cardNumber) != null){
-                cardNumber = ThreadLocalRandom.current().nextInt(0, 9999 + 1) +
-                             "-" +
-                             ThreadLocalRandom.current().nextInt(0, 9999 + 1) +
-                             "-" +
-                             ThreadLocalRandom.current().nextInt(0, 9999 + 1) +
-                             "-" +
-                             ThreadLocalRandom.current().nextInt(0, 9999 + 1);
+        if(clientService.getClientByEmail(authentication.getName()) != null) {
+            System.out.println("UNO");
+            if(!(type.equals(CardType.DEBIT)) && !(type.equals(CardType.CREDIT))){
+                System.out.println("DOS");
+                String message = (Objects.isNull(type)? "Type. ":"") +
+                        (Objects.isNull(color)?"Color. ":"");
+                return new ResponseEntity<>("Missing data: " + message, HttpStatus.FORBIDDEN);
             }
-            Card card = new Card(client.getFullName(), type, color, cardNumber, cvv,
-                                LocalDate.now(), LocalDate.now().plusYears(5));
-            client.addCard(card);
-            cardRepo.save(card);
-            return new ResponseEntity<>("Card created success", HttpStatus.CREATED);
+            else {
+                return cardService.addNewCard(authentication.getName(), type, color);
+            }
 
         }else{
-            return new ResponseEntity<>(
-                    type.equals(CardType.DEBIT)?
-                            "Limit of three debit cards reached":
-                            "Limit of three credit cards reached",
-                    HttpStatus.FORBIDDEN);
-        }*/
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+
 
     }
 

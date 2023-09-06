@@ -14,8 +14,12 @@ public interface AccountService {
 
     public AccountDTO getAccountById(String email, Long id);
 
+    public AccountDTO getAccountByNumber(String number);
+
     public Set<AccountDTO> getAccountsByEmail(String email);
 
     public ResponseEntity<String> addNewAccount(String email);
+
+    public String generateAccountNumber();
 
     }

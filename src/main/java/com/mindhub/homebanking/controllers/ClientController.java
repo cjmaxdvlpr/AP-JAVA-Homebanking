@@ -26,48 +26,29 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    /*@Autowired
-    private AccountRepository accountRepo;
-
-    @Autowired
-    private ClientRepository clientRepo;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;*/
-
-
     //Servlet (listen and response to specific requests)
     @RequestMapping("/clients")
     public List<ClientDTO> getClients() {
-
         return clientService.getClients();
-
-        /*return clientRepo.findAll()
-                .stream()
-                .map(client -> new ClientDTO(client))
-                .collect(Collectors.toList());*/
-
     }
 
     @RequestMapping("/clients/{id}")
-    public ClientDTO getClient(@PathVariable Long id){
-
-        return clientService.getClientById(id);
-
-        //return new ClientDTO(clientRepo.findById(id).orElse(null));
-
+    public ResponseEntity<ClientDTO> getClient(@PathVariable Long id){
+        if(clientService.getClientById(id) != null) {
+            return new ResponseEntity<>(clientService.getClientById(id), HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @RequestMapping("/clients/current")
-    public ClientDTO getCurrentAuthenticatedClient(Authentication authentication){
-
-        return clientService.getClientByEmail(authentication.getName());
-
-        //return new ClientDTO(clientRepo.findByEmail(authentication.getName()));
-
+    public ResponseEntity<ClientDTO> getCurrentAuthenticatedClient(Authentication authentication){
+        if(clientService.getClientByEmail(authentication.getName()) != null) {
+            return new ResponseEntity<>(clientService.getClientByEmail(authentication.getName()), HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
-
-
 
     @RequestMapping(path = "/clients", method = RequestMethod.POST)
     public ResponseEntity<String> register(
@@ -76,36 +57,18 @@ public class ClientController {
             @RequestParam String email,
             @RequestParam String password) {
 
-        return clientService.registerClient(firstName, lastName, email, password);
-
-        /*if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
-
-            return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
-
+        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            String message = (firstName.isEmpty()? "First name. ":"") +
+                             (lastName.isEmpty()?"Last name. ":"") +
+                             (email.isEmpty()?"Email. ":"") +
+                             (password.isEmpty()?"Password. ":"");
+            return new ResponseEntity<>("Missing data: " + message, HttpStatus.FORBIDDEN);
         }
-
-        if (clientRepo.findByEmail(email) !=  null) {
-
+        else if (clientService.getClientByEmail(email) !=  null) {
             return new ResponseEntity<>("Name already in use", HttpStatus.FORBIDDEN);
-
         }
-
-        Client client = new Client(firstName, lastName, email, passwordEncoder.encode(password));
-        clientRepo.save(client);
-        int vinNumber = ThreadLocalRandom.current().nextInt(10000000, 99999999 + 1);
-        //See if the account number already exists. If it exists, generate a new one.
-        String vin = "VIN-"+ vinNumber;
-        while(accountRepo.findByNumber(vin) != null){
-            vin="VIN-"+ ThreadLocalRandom.current().nextInt(10000000, 99999999 + 1);
+        else {
+            return clientService.registerClient(firstName, lastName, email, password);
         }
-        Account account = new Account( vin, LocalDate.now(), 0);
-        client.addAccount(account);
-        accountRepo.save(account);
-
-
-        return new ResponseEntity<>(HttpStatus.CREATED);*/
-
     }
-
-
 }
