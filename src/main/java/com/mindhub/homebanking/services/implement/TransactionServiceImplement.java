@@ -35,9 +35,9 @@ public class TransactionServiceImplement implements TransactionService {
                                                   String toAccountNumber){
         Account fromAccount = accountRepo.findByNumber(fromAccountNumber);
         Account toAccount = accountRepo.findByNumber(toAccountNumber);
-        if(fromAccount.getBalance() < amount){
+        /*if(fromAccount.getBalance() < amount){
             return new ResponseEntity<String>("Not enough founds on origin account", HttpStatus.FORBIDDEN);
-        }
+        }*/
         Transaction fromAccountTransaction = new Transaction( TransactionType.DEBIT, -amount, description + " - " + toAccountNumber);
         Transaction toAccountTransaction = new Transaction( TransactionType.CREDIT, amount, description + " - " + fromAccountNumber);
         fromAccount.addTransaction(fromAccountTransaction);

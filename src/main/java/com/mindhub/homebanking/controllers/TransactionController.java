@@ -56,7 +56,7 @@ public class TransactionController {
             if(accountService.getAccountByNumber(toAccountNumber) == null){
                 return new ResponseEntity<>("Destiny account not found", HttpStatus.FORBIDDEN);
             }
-            if(accountService.getAccountByNumber(toAccountNumber).getBalance() < amount){
+            if(accountService.getAccountByNumber(fromAccountNumber).getBalance() < amount){
                 return new ResponseEntity<>("Origin account founds not enough", HttpStatus.FORBIDDEN);
             }
             transactionService.makeTransaction(authentication.getName(),
