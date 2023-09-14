@@ -16,8 +16,8 @@ import java.util.List;
 @SpringBootApplication
 public class HomebankingApplication {
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	//@Autowired
+	//private PasswordEncoder passwordEncoder;
 
 	public static void main(String[] args) {
 		SpringApplication.run(HomebankingApplication.class, args);
@@ -32,7 +32,9 @@ public class HomebankingApplication {
 									  CardRepository cardRepo) {
 		return (args) -> {
 
-			Loan loan1 = new Loan("Hipotecario", 500000.0, List.of(12,24,36,48,60));
+			// Commented original hardcoded data, to avoid repeated data in the database.
+
+			/*Loan loan1 = new Loan("Hipotecario", 500000.0, List.of(12,24,36,48,60));
 			Loan loan2 = new Loan("Personal", 100000.0, List.of(6,12,24));
 			Loan loan3 = new Loan("Automotriz", 300000.0, List.of(6,12,24,36));
 			loanRepo.save(loan1);
@@ -125,7 +127,7 @@ public class HomebankingApplication {
 			cardRepo.save(card3);
 
 			Client clientAdmin = new Client("admin", "admin", "admin@mindhub.com", passwordEncoder.encode("admin"));
-			clientRepo.save(clientAdmin);
+			clientRepo.save(clientAdmin);*/
 
 		};
 	}

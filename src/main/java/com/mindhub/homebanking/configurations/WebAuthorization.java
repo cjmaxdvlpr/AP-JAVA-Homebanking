@@ -53,8 +53,8 @@ public class WebAuthorization {
                 .antMatchers("/api/clients/current/cards").hasAuthority("CLIENT")
                 .antMatchers("/api/**").hasAuthority("ADMIN")
                 //.antMatchers("/admin/**").hasAuthority("ADMIN")
-                .antMatchers("/rest/**").hasAuthority("ADMIN")
-                .antMatchers("/h2-console").hasAuthority("ADMIN");
+                .antMatchers("/rest/**").hasAuthority("ADMIN");
+                //.antMatchers("/h2-console").hasAuthority("ADMIN");
                 //.anyRequest().denyAll();
 
 

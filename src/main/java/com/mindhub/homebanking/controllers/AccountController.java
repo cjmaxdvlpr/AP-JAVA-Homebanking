@@ -41,7 +41,7 @@ public class AccountController {
 
     @RequestMapping("/accounts/{id}")
     public ResponseEntity<AccountDTO> getAccount(Authentication authentication, @PathVariable Long id){
-        if(clientService.getClientById(id) != null) {
+        if(clientService.getClientByEmail(authentication.getName()) != null) {
             return new ResponseEntity<>(accountService.getAccountById(authentication.getName(),id), HttpStatus.OK);
         }else{
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
